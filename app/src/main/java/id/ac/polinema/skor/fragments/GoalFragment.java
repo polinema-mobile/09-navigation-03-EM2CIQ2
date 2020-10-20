@@ -1,7 +1,6 @@
 package id.ac.polinema.skor.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +20,7 @@ public class GoalFragment extends Fragment {
 
 	private String requestKey;
 	private GoalScorer goalScorer;
+	private FragmentGoalBinding binding;
 
 	public GoalFragment() {
 		// Required empty public constructor
@@ -35,18 +35,25 @@ public class GoalFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
-		FragmentGoalBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_goal, container, false);
-
+		binding = DataBindingUtil.inflate(inflater, R.layout.fragment_goal, container, false);
+		binding.setFragment(this);
+		binding.setGoalScorer(goalScorer);
 		requestKey = GoalFragmentArgs.fromBundle(getArguments()).getRequestKey();
 		return binding.getRoot();
 	}
 
 	public void onSaveClicked(View view) {
+		// Ekstrak nilai dari input.
+		goalScorer.setName(binding.inputName.getText().toString());
+		goalScorer.setMinute(Integer.parseInt(binding.inputMinute.getText().toString()));
 
+		Bundle bundle = new Bundle();
+		bundle.putParcelable(ScoreFragment.SCORER_KEY, goalScorer);
+		getParentFragmentManager().setFragmentResult(requestKey, bundle);
+		Navigation.findNavController(view).navigateUp();
 	}
 
 	public void onCancelClicked(View view) {
-		// TODO: DOESNT WORK
-		Navigation.findNavController(view).navigate(R.id.action_goalFragment_to_scoreFragment);
+		Navigation.findNavController(view).navigateUp();
 	}
 }
